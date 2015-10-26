@@ -1,0 +1,18 @@
+{
+  "name": "fontloader",
+  "main": "fontloader.js",
+  "version": "0.1.0",
+  "homepage": "https://github.com/plusgut/fontloader",
+  "authors": [
+    "plusgut <cj@lvl3.org>"
+  ],
+  "description": "a draft for checking if a font got loaded",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
