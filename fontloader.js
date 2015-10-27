@@ -28,10 +28,12 @@ function Font( opt ){
 
 	this._init = function() {
 		if( !this.fallbackFont ) throw ('No fallbackFont was defined');
+		if( !this.fontName )     throw ('No fontName was defined');
 		if( !this.node )         throw ('No dom node was defined');
 		this.node.style.fontFamily = this.fallbackFont;
-		this._currentWidth         = this._getWidth( this.node );
-		this._startInterval();
+		this._currentWidth         = this._getWidth(); // A reference value with another font is needed
+		this.node.style.fontFamily = this.fontName + ' ' + this.fallbackFont;
+		this._checkWidth(); // Starts the interval
 	};
 
 	this._checkWidth = function() {
@@ -51,8 +53,11 @@ function Font( opt ){
 		}
 	};
 
-	this._getWidth = function( node ){
-		
+	this._getWidth = function(){
+		if( !this.node.getBBox )
+			throw 'This library currently only supports svg nodes';
+		var bbox = this.node.getBBox();
+		return bbox.width;
 	};
 
 	this._init();
