@@ -6,12 +6,12 @@
  * Released under the MIT license
  */
 function Font( opt ){
-	this.success      = function() {}; // Callback after successfull loading
-	this.error        = function() {}; // Callback after error loading
-	this.node         = null;          // Dom node where the font should be changed
-	this.fontName     = null;          // Name of the fontface
-	this.fontUrl      = null;          // Name of the fonturl
-	this.fallbackFont = 'Arial';   // The font which should be used, when fontloading fails
+	this.success      = null;    // Callback after successfull loading
+	this.error        = null;    // Callback after error loading
+	this.node         = null;    // Dom node where the font should be changed
+	this.fontName     = null;    // Name of the fontface
+	this.fontUrl      = null;    // Name of the fonturl
+	this.fallbackFont = 'arial'; // The font which should be used, when fontloading fails
 
 	this._increment    = 0;   // Current state how often it got checked
 	this._maxIncrement = 20;  // Defines how 
@@ -19,7 +19,7 @@ function Font( opt ){
 
 	for( var index in opt ){
 		if( opt.hasOwnProperty( index )){
-			if( !thist.hasOwnProperty( index )){
+			if( !this.hasOwnProperty( index )){
 				console.info( 'The property ' + index + ' is no setting of the fontloader');
 			}
 			this[ index ] = opt[ index ];
@@ -32,7 +32,7 @@ function Font( opt ){
 		if( !this.node )         throw ('No dom node was defined');
 		this.node.style.fontFamily = this.fallbackFont;
 		this._currentWidth         = this._getWidth(); // A reference value with another font is needed
-		this.node.style.fontFamily = this.fontName + ' ' + this.fallbackFont;
+		this.node.style.fontFamily = this.fontName + ',' + this.fallbackFont;
 		this._checkWidth(); // Starts the interval
 	};
 
@@ -46,7 +46,7 @@ function Font( opt ){
 
 	this._startInterval = function() {
 		this._increment++;
-		if( this._maxIncrement > this._increment ){
+		if( this._increment > this._maxIncrement ){
 			this.error();
 		} else {
 			window.setTimeout( this._checkWidth.bind( this ), this._interval);
@@ -54,9 +54,11 @@ function Font( opt ){
 	};
 
 	this._getWidth = function(){
-		if( !this.node.getBBox )
+		if( !this.node.getBBox ){
 			throw 'This library currently only supports svg nodes';
+		}
 		var bbox = this.node.getBBox();
+		// console.log(bbox.width);
 		return bbox.width;
 	};
 
