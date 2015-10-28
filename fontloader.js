@@ -6,11 +6,13 @@
  * Released under the MIT license
  */
 function Font( opt ){
-	this.success      = null;    // Callback after successfull loading
-	this.error        = null;    // Callback after error loading
-	this.node         = null;    // Dom node where the font should be changed
-	this.fontName     = null;    // Name of the fontface
-	this.fontUrl      = null;    // Name of the fonturl
+	this.success      = null;       // Callback after successfull loading
+	this.error        = null;       // Callback after error loading
+	this.node         = null;       // Dom node where the font should be changed
+	this.fontName     = null;       // Name of the fontface
+	this.fontUrl      = null;       // Name of the fontface
+	this.fontFormat   = 'opentype'; // Name of the fontface
+
 	this.fallbackFont = 'arial'; // The font which should be used, when fontloading fails
 
 	this._increment    = 0;   // Current state how often it got checked
@@ -30,10 +32,38 @@ function Font( opt ){
 		if( !this.fallbackFont ) throw ('No fallbackFont was defined');
 		if( !this.fontName )     throw ('No fontName was defined');
 		if( !this.node )         throw ('No dom node was defined');
+		if( this.fontUrl ) this._addFontFace( this.fontName, this.fontUrl, this.fontFormat );
 		this.node.style.fontFamily = this.fallbackFont;
 		this._currentWidth         = this._getWidth(); // A reference value with another font is needed
 		this.node.style.fontFamily = this.fontName + ',' + this.fallbackFont;
 		this._checkWidth(); // Starts the interval
+	};
+
+	this._addFontFace = function( fontName, fontUrl, format ) {
+		if( !this._fontFaceExists( fontName) ){
+			var style          = document.createElement('style');
+			style.className    = this._className;
+			style.dataset.face = fontName;
+			style.appendChild( document.createTextNode("\
+				@font-face {\
+					font-family: '" + fontName + "';\
+					src: url('" + fontUrl + "') format(" + format + ");\
+				}\
+			"));
+			
+			document.head.appendChild(style);
+		}
+	};
+
+	this._fontFaceExists = function( name ) {
+		var fontloader = document.getElementsByClassName( this._className );
+		var found      = false;
+		for( var i = 0; i < fontloader.length; i++ ){
+			if(fontloader[ i ].dataset.face === name) {
+				found = true;
+			}
+		}
+		return found;
 	};
 
 	this._checkWidth = function() {
